@@ -85,5 +85,9 @@ fun QuoteDetailsScreen(quote: Quote) {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun DefaultPreview() {
-//    QuoteDetails("Be yourself; everyone else is already taken.", "Theophrastus")
+    val quote = Quote(
+        text = "Be yourself; everyone else is already taken.",
+        author = "Oscar Wilde"
+    )
+    QuoteDetailsScreen(quote = quote)
 }
