@@ -30,12 +30,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import com.uv.quotecomposeapp.model.Quote
 
 @Composable
-fun QuoteListItems(quote: Quote, onClick : () -> Unit) {
+fun QuoteListItems(quote: Quote, onClick : (quote : Quote) -> Unit) {
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         shape = RoundedCornerShape(18.dp),
         modifier = Modifier
-            .clickable { onClick }
+            .clickable { onClick(quote) }
             .fillMaxWidth()
             .padding(8.dp)
     ) {
