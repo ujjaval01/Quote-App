@@ -1,35 +1,22 @@
 package com.uv.quotecomposeapp
 
 import android.os.Bundle
-import android.text.Layout
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import com.uv.quotecomposeapp.screens.DotsLoader
-import com.uv.quotecomposeapp.screens.PulseCircleLoader
+import com.uv.quotecomposeapp.screens.QuoteDetailsScreen
 import com.uv.quotecomposeapp.screens.QuoteListScreen
-import com.uv.quotecomposeapp.screens.QuoteLoader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -59,7 +46,13 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun App() {
     if(DataManager.isDataLoaded.value){
-        QuoteListScreen(data = DataManager.data){
+
+        if(DataManager.currentPage.value == Pages.LISTING){
+            QuoteListScreen(data = DataManager.data){ quote ->
+                DataManager.switchPages(quote)
+            }
+        }else{
+            DataManager.currentQuote?.let { QuoteDetailsScreen(quote = it) }
         }
     }
     else{
@@ -72,6 +65,10 @@ fun App() {
     }
 }
 
+enum class Pages{
+    LISTING,
+    DETAIL
+}
 
 
 // for making dark theme temporary
