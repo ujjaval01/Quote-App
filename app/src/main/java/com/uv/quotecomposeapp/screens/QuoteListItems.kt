@@ -37,7 +37,7 @@ fun QuoteListItems(quote: Quote, onClick : () -> Unit) {
         modifier = Modifier
             .clickable { onClick }
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
+            .padding(8.dp)
     ) {
         Row(
             modifier = Modifier
