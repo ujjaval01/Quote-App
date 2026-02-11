@@ -46,13 +46,16 @@ dependencies {
     implementation(libs.androidx.activity.compose)
 
     implementation(platform(libs.androidx.compose.bom))
+
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    // ✅ icons (BOM controlled)
     implementation("androidx.compose.material:material-icons-extended")
 
+    implementation(libs.androidx.navigation.compose)
+
     implementation("com.google.code.gson:gson:2.13.2")
+
 }
