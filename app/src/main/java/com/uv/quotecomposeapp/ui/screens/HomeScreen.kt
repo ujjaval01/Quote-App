@@ -6,15 +6,27 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cloud
+import androidx.compose.material.icons.filled.EmojiEmotions
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.SelfImprovement
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.uv.quotecomposeapp.loader.DotsLoader
+import com.uv.quotecomposeapp.loader.QuoteLoader
 import kotlinx.coroutines.delay
 import com.uv.quotecomposeapp.viewmodel.QuoteViewModel
 
@@ -23,9 +35,11 @@ fun HomeScreen(
     navController: NavController,
     viewModel: QuoteViewModel
 ) {
-
     val quotes = viewModel.allQuotes.shuffled().take(5)
     var currentIndex by remember { mutableStateOf(0) }
+
+//    if(quotes.isEmpty())
+//        return
 
     LaunchedEffect(Unit) {
         while (true) {
@@ -133,7 +147,7 @@ fun HomeScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         Text(
             text = "Categories",
@@ -143,54 +157,108 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        val categories =
-            viewModel.allQuotes.map { it.category }.distinct()
-
-        val categoryColors = listOf(
-            Color(0xFFff9a9e),
-            Color(0xFFa18cd1),
-            Color(0xFFfbc2eb),
-            Color(0xFF84fab0),
-            Color(0xFFf6d365)
-        )
-
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
-            items(categories) { category ->
-
-                val bgColor =
-                    categoryColors.random()
+            items(categoriesUI) { category ->
 
                 Card(
-                    shape = RoundedCornerShape(22.dp),
-                    elevation = CardDefaults.cardElevation(6.dp),
+                    shape = RoundedCornerShape(24.dp),
+                    elevation = CardDefaults.cardElevation(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(100.dp)
                         .clickable {
-                            navController.navigate("quotes/$category")
+                            navController.navigate("quotes/${category.name}")
                         }
                 ) {
 
                     Box(
-                        contentAlignment = Alignment.Center,
                         modifier = Modifier
-                            .background(bgColor)
+                            .background(
+                                Brush.linearGradient(category.colors)
+                            )
                             .fillMaxSize()
                     ) {
 
-                        Text(
-                            text = category,
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold
+                        // Glass Overlay
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    Color.White.copy(alpha = 0.15f)
+                                )
                         )
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.SpaceBetween
+                        ) {
+
+                            Icon(
+                                imageVector = category.icon,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(28.dp)
+                            )
+
+                            Text(
+                                text = category.name,
+                                color = Color.White,
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Bold,
+//                                modifier = Modifier.padding(bottom = 2.dp)
+                            )
+                        }
                     }
                 }
             }
         }
     }
 }
+
+
+// --------------------------------------------------------------------------
+
+data class CategoryUI(
+    val name: String,
+    val icon: ImageVector,
+    val colors: List<Color>
+)
+
+val categoriesUI = listOf(
+    CategoryUI(
+        "Motivation",
+        Icons.Default.EmojiEvents,
+        listOf(Color(0xFFFF512F), Color(0xFFDD2476))
+    ),
+    CategoryUI(
+        "Love",
+        Icons.Default.Favorite,
+        listOf(Color(0xFFFF9A9E), Color(0xFFFAD0C4))
+    ),
+    CategoryUI(
+        "Sad",
+        Icons.Default.Cloud,
+        listOf(Color(0xFF4B6CB7), Color(0xFF182848))
+    ),
+    CategoryUI(
+        "Success",
+        Icons.Default.Star,
+        listOf(Color(0xFFF7971E), Color(0xFFFFD200))
+    ),
+    CategoryUI(
+        "Life",
+        Icons.Default.SelfImprovement,
+        listOf(Color(0xFF11998E), Color(0xFF38EF7D))
+    ),
+    CategoryUI(
+        "Emotional",
+        Icons.Default.EmojiEmotions,
+        listOf(Color(0xFF2196F3), Color(0xFFA950B8))
+    )
+)
