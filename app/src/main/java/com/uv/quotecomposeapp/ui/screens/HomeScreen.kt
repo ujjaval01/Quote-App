@@ -12,14 +12,18 @@ import androidx.compose.material.icons.filled.EmojiEmotions
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.SelfImprovement
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,6 +41,8 @@ fun HomeScreen(
 ) {
     val quotes = viewModel.allQuotes.shuffled().take(5)
     var currentIndex by remember { mutableStateOf(0) }
+    val context = LocalContext.current
+
 
 //    if(quotes.isEmpty())
 //        return
@@ -83,46 +89,122 @@ fun HomeScreen(
             label = ""
         ) { quote ->
 
+            val infiniteTransition = rememberInfiniteTransition(label = "")
+            val animatedOffset by infiniteTransition.animateFloat(
+                initialValue = 0f,
+                targetValue = 1000f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(6000, easing = LinearEasing)
+                ),
+                label = ""
+            )
+
+            val scale by animateFloatAsState(
+                targetValue = 1f,
+                animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+                label = ""
+            )
+
             Card(
-                shape = RoundedCornerShape(30.dp),
-                elevation = CardDefaults.cardElevation(10.dp),
+                shape = RoundedCornerShape(32.dp),
+                elevation = CardDefaults.cardElevation(20.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(220.dp)
+                    .height(230.dp)
+                    .scale(scale)
             ) {
 
                 Box(
                     modifier = Modifier
                         .background(
                             Brush.linearGradient(
-                                colors = gradients[currentIndex % gradients.size]
+                                colors = gradients[currentIndex % gradients.size],
+                                start = Offset(animatedOffset, 0f),
+                                end = Offset(animatedOffset + 800f, 800f)
                             )
                         )
-                        .padding(24.dp)
+                        .padding(28.dp)
                 ) {
+
+                    // 🌟 Big Faded Quote Mark
+                    Text(
+                        text = "“",
+                        fontSize = 120.sp,
+                        color = Color.White.copy(alpha = 0.15f),
+                        modifier = Modifier.align(Alignment.TopStart)
+                    )
 
                     Column(
                         verticalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier.fillMaxSize()
                     ) {
 
-                        Text(
-                            text = "“${quote.text}”",
-                            color = Color.White,
-                            fontSize = 18.sp,
-                            lineHeight = 26.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )
+                        Column {
 
-                        Text(
-                            text = "— ${quote.author}",
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold
-                        )
+                            // 🔖 Badge
+                            Box(
+                                modifier = Modifier
+                                    .background(
+                                        Color.White.copy(alpha = 0.2f),
+                                        RoundedCornerShape(50)
+                                    )
+                                    .padding(horizontal = 12.dp, vertical = 4.dp)
+                                    .align(Alignment.End)
+
+                            ) {
+                                Text(
+                                    text = "Daily Pick",
+                                    color = Color.White,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Text(
+                                text = quote.text,
+                                color = Color.White,
+                                fontSize = 19.sp,
+                                lineHeight = 28.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "— ${quote.author}",
+                                color = Color.White.copy(alpha = 0.9f),
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(top = 2.dp)
+                            )
+
+                            IconButton(
+                                onClick = {
+                                    val fullText =
+                                        "${quote.text}\n\n— ${quote.author}"
+                                    shareQuote(
+                                        context,
+                                        fullText
+                                    )
+                                }
+                            ) {
+                                Icon(
+                                    Icons.Default.Share,
+                                    contentDescription = "Share",
+                                    tint = Color.White,
+                                    modifier = Modifier.padding(bottom = 10.dp)
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
