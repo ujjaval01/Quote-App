@@ -10,9 +10,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import com.uv.quotecomposeapp.notification.scheduleDailyNotifications
+import com.uv.quotecomposeapp.ui.screens.SplashScreen
 import com.uv.quotecomposeapp.ui.theme.QuoteComposeAppTheme
 import com.uv.quotecomposeapp.utils.checkForAppUpdate
 import com.uv.quotecomposeapp.viewmodel.QuoteViewModel
@@ -58,12 +63,15 @@ class MainActivity : ComponentActivity() {
         setContent {
 
             val isDark by viewModel.isDarkMode.observeAsState(false)
+            var showSplash by rememberSaveable { mutableStateOf(true) }
 
             QuoteComposeAppTheme(darkTheme = isDark) {
-
                 checkForAppUpdate(this)
-
-                MainScreen(viewModel)
+                if (showSplash) {
+                    SplashScreen(onNavigate = { showSplash = false })
+                } else{
+                    MainScreen(viewModel)
+                }
             }
         }
     }
