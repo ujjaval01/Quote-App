@@ -31,6 +31,10 @@ import android.view.View
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.graphics.luminance
 
 
 @Composable
@@ -45,19 +49,34 @@ fun QuoteDetailScreen(
     val quoteView = remember { mutableStateOf<View?>(null) }
 
 
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val bgGradient = if (isDark) {
+        listOf(
+            Color(0xFF0F2027),
+            Color(0xFF203A43),
+            Color(0xFF2C5364)
+        )
+    } else {
+        listOf(
+            Color(0xFFff9966),
+            Color(0xFFff5e62)
+        )
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                Brush.linearGradient(
-                    colors = listOf(
-                        Color(0xFFE6DCCF),
-                        Color(0xFFB7E4C7),
-                        Color(0xFF95D5B2)
-                    )
-                )
+                Brush.radialGradient(
+                    colors = if (isDark)
+                        listOf(Color(0xFF2C5364), Color(0xFF0F2027))
+                    else
+                        listOf(Color(0xFFFFE29F), Color(0xFFFF719A)),
+                    radius = 900f
+                ),
+                shape = RoundedCornerShape(6.dp, 6.dp, 0.dp, 0.dp)
             )
+
             .padding(24.dp)
     ) {
 
@@ -100,25 +119,30 @@ fun QuoteDetailScreen(
 
                         Box(
                             modifier = Modifier
-                                .fillMaxWidth()
+                                .fillMaxSize()
                                 .background(
-                                    Brush.linearGradient(
-                                        colors = listOf(
-                                            Color(0xFFE6DCCF),
-                                            Color(0xFFB7E4C7),
-                                            Color(0xFF95D5B2)
-                                        )
-                                    )
+                                    Brush.radialGradient(
+                                        colors = if (isDark)
+                                            listOf(Color(0xFF2C5364), Color(0xFF0F2027))
+                                        else
+                                            listOf(Color(0xFFFFE29F), Color(0xFFFF719A)),
+                                        radius = 900f
+                                    ),
+                                    shape = RoundedCornerShape(28.dp)
                                 )
-                                .padding(40.dp)
-                        ) {
+
+                                .padding(24.dp)
+                        ){
 
                             Column {
 
                                 Text(
                                     text = "❝",
                                     fontSize = 60.sp,
-                                    color = Color(0xFF000000).copy(alpha = 0.5f)
+                                    color = if (isDark)
+                                        Color.White.copy(alpha = 0.4f)
+                                    else
+                                        Color.Black.copy(alpha = 0.4f)
                                 )
 
                                 Text(
@@ -133,7 +157,7 @@ fun QuoteDetailScreen(
                                 Text(
                                     text = "❞",
                                     fontSize = 60.sp,
-                                    color = Color(0xFF000000).copy(alpha = 0.5f),
+                                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
                                             modifier = Modifier.align(
                                         androidx.compose.ui.Alignment.End
                                     )
@@ -144,10 +168,8 @@ fun QuoteDetailScreen(
                                     text = author.uppercase(),
                                     fontSize = 12.sp,
                                     letterSpacing = 2.sp,
-                                    color = Color.DarkGray
+                                    color = if (isDark) Color.LightGray else Color.DarkGray
                                 )
-
-
                             }
                         }
                     }
