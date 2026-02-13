@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.EmojiEmotions
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.SelfImprovement
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
@@ -24,15 +25,18 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.uv.quotecomposeapp.loader.DotsLoader
 import com.uv.quotecomposeapp.loader.QuoteLoader
 import kotlinx.coroutines.delay
 import com.uv.quotecomposeapp.viewmodel.QuoteViewModel
+import kotlin.random.Random
 
 @Composable
 fun HomeScreen(
@@ -40,7 +44,7 @@ fun HomeScreen(
     viewModel: QuoteViewModel
 ) {
     val quotes = viewModel.allQuotes.shuffled().take(5)
-    var currentIndex by remember { mutableStateOf(0) }
+    var currentIndex: Int by remember { mutableIntStateOf(0) }
     val context = LocalContext.current
 
 
@@ -68,15 +72,40 @@ fun HomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF4F6FA))
+            .background(MaterialTheme.colorScheme.background,
+                shape = RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp))
             .padding(16.dp)
+
     ) {
 
-        Text(
-            text = "Daily Quotes",
-            fontSize = 26.sp,
-            fontWeight = FontWeight.Bold
-        )
+        Row(verticalAlignment = Alignment.Top) {
+
+            Icon(
+                imageVector = Icons.Default.EmojiEmotions,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .size(36.dp)
+                    .padding(top = 4.dp)
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Column {
+                Text(
+                    text = "Daily Quotes",
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    style = MaterialTheme.typography.headlineLarge
+                )
+                Text(
+                    text = "Stay inspired every day ✨",
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                )
+            }
+        }
+
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -246,18 +275,18 @@ fun HomeScreen(
         ) {
 
             items(categoriesUI) { category ->
-
+// ---------------- Category Card UI ---------------------------
                 Card(
                     shape = RoundedCornerShape(24.dp),
                     elevation = CardDefaults.cardElevation(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(100.dp)
+                        .padding(bottom = 6.dp)
                         .clickable {
                             navController.navigate("quotes/${category.name}")
                         }
                 ) {
-
                     Box(
                         modifier = Modifier
                             .background(
@@ -268,6 +297,7 @@ fun HomeScreen(
 
                         // Glass Overlay
                         Box(
+
                             modifier = Modifier
                                 .fillMaxSize()
                                 .background(
