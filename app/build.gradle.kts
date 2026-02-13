@@ -75,6 +75,14 @@ dependencies {
 
     // work manager dep for notifications
     implementation("androidx.work:work-runtime-ktx:2.9.0")
+
+    // playstore(rating)
+    implementation("com.google.android.play:review:2.0.1")
+    implementation("com.google.android.play:review-ktx:2.0.1")
+
+    // playstore(check for update)
+    implementation("com.google.android.play:app-update:2.1.0")
+    implementation("com.google.android.play:app-update-ktx:2.1.0")
     
     // Test dependencies
     testImplementation(kotlin("test"))
