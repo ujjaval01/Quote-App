@@ -6,7 +6,6 @@ import androidx.work.*
 import com.uv.quotecomposeapp.data.*
 import com.uv.quotecomposeapp.data.datastore.ThemeDataStore
 import com.uv.quotecomposeapp.data.local.*
-import com.uv.quotecomposeapp.notification.DailyQuoteWorker
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
@@ -60,35 +59,4 @@ class QuoteViewModel(application: Application)
         }
     }
 
-    // ---------------- Daily Notification ----------------
-
-    fun scheduleDailyQuote() {
-
-        val calendar = Calendar.getInstance()
-
-        calendar.set(Calendar.HOUR_OF_DAY, 8)
-        calendar.set(Calendar.MINUTE, 0)
-        calendar.set(Calendar.SECOND, 0)
-
-        if (calendar.timeInMillis < System.currentTimeMillis()) {
-            calendar.add(Calendar.DAY_OF_YEAR, 1)
-        }
-
-        val initialDelay =
-            calendar.timeInMillis - System.currentTimeMillis()
-
-        val workRequest =
-            PeriodicWorkRequestBuilder<DailyQuoteWorker>(
-                1, TimeUnit.DAYS
-            )
-                .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
-                .build()
-
-        WorkManager.getInstance(application)   // ✅ FIXED
-            .enqueueUniquePeriodicWork(
-                "daily_quote_work",
-                ExistingPeriodicWorkPolicy.KEEP,
-                workRequest
-            )
-    }
 }
