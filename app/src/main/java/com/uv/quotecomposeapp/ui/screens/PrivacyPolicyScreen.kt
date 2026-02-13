@@ -125,9 +125,7 @@ Notification permission is used only to deliver daily inspirational quotes.
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary
                     )
-
                     Spacer(modifier = Modifier.width(12.dp))
-
                     Text(
                         text = "View detailed privacy policy",
                         modifier = Modifier.weight(1f),
