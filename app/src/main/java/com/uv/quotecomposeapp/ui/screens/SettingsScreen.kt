@@ -1,21 +1,25 @@
 package com.uv.quotecomposeapp.ui.screens
 
+import android.app.Activity
+import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material.icons.filled.PrivacyTip
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.*
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.uv.quotecomposeapp.viewmodel.QuoteViewModel
+import com.uv.quotecomposeapp.utils.checkForAppUpdate
+import com.uv.quotecomposeapp.utils.launchInAppReview
 
 @Composable
 fun SettingsScreen(
@@ -24,6 +28,8 @@ fun SettingsScreen(
 ) {
 
     val isDarkMode by viewModel.isDarkMode.observeAsState(false)
+    val context = LocalContext.current
+    val activity = context as Activity
 
     Column(
         modifier = Modifier
@@ -31,10 +37,11 @@ fun SettingsScreen(
             .padding(16.dp)
     ) {
 
+        // Title
         Text(
             text = "Settings",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.ExtraBold
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -85,7 +92,7 @@ fun SettingsScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // ---------------- About Section ----------------
+        // ---------------- Information ----------------
 
         Text(
             text = "Information",
@@ -94,69 +101,123 @@ fun SettingsScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // About Card
-        Card(
-            shape = RoundedCornerShape(20.dp),
-            elevation = CardDefaults.cardElevation(4.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-                    navController.navigate("about")
-                }
+        SettingItem(
+            icon = Icons.Default.Info,
+            title = "About App",
+            subtitle = "App details and version info"
         ) {
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Icon(
-                    imageVector = Icons.Default.Info,
-                    contentDescription = null
-                )
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                Text(
-                    text = "About App",
-                    fontWeight = FontWeight.Medium
-                )
-            }
+            navController.navigate("about")
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Privacy Policy Card
-        Card(
-            shape = RoundedCornerShape(20.dp),
-            elevation = CardDefaults.cardElevation(4.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-                    navController.navigate("privacy")
-                }
+        SettingItem(
+            icon = Icons.Default.PrivacyTip,
+            title = "Privacy Policy",
+            subtitle = "Read how we protect your data"
+        ) {
+            navController.navigate("privacy")
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // ---------------- Features ----------------
+
+        Text(
+            text = "Features",
+            fontWeight = FontWeight.SemiBold
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        SettingItem(
+            icon = Icons.Default.StarRate,
+            title = "Rate this App ⭐",
+            subtitle = "Share your feedback on Play Store"
+        ) {
+            launchInAppReview(activity)
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        SettingItem(
+            icon = Icons.Default.Update,
+            title = "Check for Updates",
+            subtitle = "Make sure you have latest version"
+        ) {
+            checkForAppUpdate(activity)
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        SettingItem(
+            icon = Icons.Default.Share,
+            title = "Share App",
+            subtitle = "Share with your friends"
         ) {
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Icon(
-                    imageVector = Icons.Default.PrivacyTip,
-                    contentDescription = null
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(
+                    Intent.EXTRA_TEXT,
+                    "Check out this amazing Daily Quotes app!\n\nhttps://play.google.com/store/apps/details?id=${activity.packageName}"
                 )
+            }
 
-                Spacer(modifier = Modifier.width(12.dp))
+            activity.startActivity(
+                Intent.createChooser(intent, "Share via")
+            )
+        }
+    }
+}
 
+
+// ------------------------------------------------------------
+// Reusable Setting Item
+// ------------------------------------------------------------
+
+@Composable
+fun SettingItem(
+    icon: ImageVector,
+    title: String,
+    subtitle: String? = null,
+    onClick: () -> Unit
+) {
+    Card(
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+    ) {
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Icon(
+                imageVector = icon,
+                contentDescription = null
+            )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column {
                 Text(
-                    text = "Privacy Policy",
+                    text = title,
                     fontWeight = FontWeight.Medium
                 )
+
+                subtitle?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                }
             }
         }
     }
