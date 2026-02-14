@@ -56,17 +56,18 @@ fun HomeScreen(
         mutableStateOf(prefs.getBoolean("first_launch", true))
     }
 
-
-
 //    if(quotes.isEmpty())
 //        return
 
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(3000)
-            currentIndex = (currentIndex + 1) % quotes.size
+    LaunchedEffect(quotes.size) {
+        if (quotes.isNotEmpty()) {
+            while (true) {
+                delay(3000)
+                currentIndex = (currentIndex + 1) % quotes.size
+            }
         }
     }
+
 
     val currentQuote = quotes[currentIndex]
 
@@ -147,8 +148,8 @@ fun HomeScreen(
 
             Card(
                 shape = RoundedCornerShape(32.dp),
-                elevation = CardDefaults.cardElevation(20.dp),
-                modifier = Modifier
+                elevation = CardDefaults.cardElevation(6.dp),
+                        modifier = Modifier
                     .fillMaxWidth()
                     .height(230.dp)
                     .scale(scale)
@@ -278,46 +279,44 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // ------------------Category card-------------------
+
         LazyVerticalGrid(
+            modifier = Modifier.weight(1f),
             columns = GridCells.Fixed(2),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
-            items(categoriesUI) { category ->
-// ---------------- Category Card UI ---------------------------
+            items(
+                items = categoriesUI,
+                key = { it.name } // IMPORTANT for performance
+            ) { category ->
+
+                val gradient = remember(category) {
+                    Brush.linearGradient(category.colors)
+                }
+
                 Card(
-                    shape = RoundedCornerShape(24.dp),
-                    elevation = CardDefaults.cardElevation(8.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = CardDefaults.cardElevation(2.dp), // reduced
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(100.dp)
-                        .padding(bottom = 6.dp)
                         .clickable {
                             navController.navigate("quotes/${category.name}")
                         }
                 ) {
+
                     Box(
                         modifier = Modifier
-                            .background(
-                                Brush.linearGradient(category.colors)
-                            )
                             .fillMaxSize()
+                            .background(gradient)
+                            .padding(16.dp)
                     ) {
 
-                        // Glass Overlay
-                        Box(
-
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(
-                                    Color.White.copy(alpha = 0.15f)
-                                )
-                        )
                         Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp),
+                            modifier = Modifier.fillMaxSize(),
                             verticalArrangement = Arrangement.SpaceBetween
                         ) {
 
@@ -325,15 +324,14 @@ fun HomeScreen(
                                 imageVector = category.icon,
                                 contentDescription = null,
                                 tint = Color.White,
-                                modifier = Modifier.size(28.dp)
+                                modifier = Modifier.size(26.dp)
                             )
 
                             Text(
                                 text = category.name,
                                 color = Color.White,
                                 style = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.Bold,
-//                                modifier = Modifier.padding(bottom = 2.dp)
+                                fontWeight = FontWeight.SemiBold
                             )
                         }
                     }
@@ -345,13 +343,10 @@ fun HomeScreen(
         ModalBottomSheet()
 
     }
-
-
 }
 
 
-// --------------------------------------------------------------------------
-
+// Category card
 data class CategoryUI(
     val name: String,
     val icon: ImageVector,
