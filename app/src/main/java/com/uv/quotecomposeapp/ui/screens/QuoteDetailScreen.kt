@@ -1,42 +1,31 @@
 package com.uv.quotecomposeapp.ui.screens
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.view.View
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.*
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.compose.ui.platform.LocalView
-import android.view.View
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.graphics.luminance
+import androidx.navigation.NavController
+import android.app.Activity
+import android.content.pm.ActivityInfo
 
 
+@SuppressLint("ContextCastToActivity")
 @Composable
 fun QuoteDetailScreen(
     text: String,
@@ -45,38 +34,35 @@ fun QuoteDetailScreen(
 ) {
 
     val context = LocalContext.current
-    val view = LocalView.current
     val quoteView = remember { mutableStateOf<View?>(null) }
 
 
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val bgGradient = if (isDark) {
-        listOf(
-            Color(0xFF0F2027),
-            Color(0xFF203A43),
-            Color(0xFF2C5364)
-        )
-    } else {
-        listOf(
-            Color(0xFFff9966),
-            Color(0xFFff5e62)
-        )
+
+    val backgroundBrush = Brush.radialGradient(
+        colors = if (isDark)
+            listOf(Color(0xFF1F1C2C), Color(0xFF000000))
+        else
+            listOf(Color(0xFFFFE29F), Color(0xFFFF719A)),
+        radius = 900f
+    )
+
+    val iconColor = if (isDark) Color.White else Color.Black
+
+    val activity = LocalContext.current as Activity
+
+    DisposableEffect(Unit) {
+        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        onDispose {
+            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        }
     }
+
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.radialGradient(
-                    colors = if (isDark)
-                        listOf(Color(0xFF2C5364), Color(0xFF0F2027))
-                    else
-                        listOf(Color(0xFFFFE29F), Color(0xFFFF719A)),
-                    radius = 900f
-                ),
-                shape = RoundedCornerShape(6.dp, 6.dp, 0.dp, 0.dp)
-            )
-
+            .background(backgroundBrush)
             .padding(24.dp)
     ) {
 
@@ -84,32 +70,33 @@ fun QuoteDetailScreen(
             modifier = Modifier.fillMaxSize()
         ) {
 
-            // Top Bar
+            // 🔙 Top Bar
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.Start
             ) {
 
                 IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = null)
+                    Icon(
+                        Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = iconColor
+                    )
                 }
-
-                // THERE DOT(:) MENU BUTTON
-//                IconButton(onClick = { /* future menu */ }) {
-//                    Icon(Icons.Default.MoreVert, contentDescription = null)
-//                }
             }
 
-            Spacer(modifier = Modifier.height(60.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
+            // 📌 Quote Card (Only this will be saved)
             AndroidView(
                 factory = { context ->
                     android.widget.FrameLayout(context).apply {
                         quoteView.value = this
                     }
-
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             ) { frameLayout ->
 
                 frameLayout.removeAllViews()
@@ -121,55 +108,51 @@ fun QuoteDetailScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .background(
-                                    Brush.radialGradient(
+                                    Brush.linearGradient(
                                         colors = if (isDark)
-                                            listOf(Color(0xFF2C5364), Color(0xFF0F2027))
+                                            listOf(Color(0xFF2C3E50), Color(0xFF000000))
                                         else
-                                            listOf(Color(0xFFFFE29F), Color(0xFFFF719A)),
-                                        radius = 900f
+                                            listOf(Color(0xFFff9966), Color(0xFFff5e62))
                                     ),
                                     shape = RoundedCornerShape(28.dp)
                                 )
+                                .padding(28.dp)
+                        ) {
 
-                                .padding(24.dp)
-                        ){
-
-                            Column {
+                            Column(
+                                verticalArrangement = Arrangement.SpaceBetween,
+                                modifier = Modifier.fillMaxSize()
+                            ) {
 
                                 Text(
                                     text = "❝",
-                                    fontSize = 60.sp,
-                                    color = if (isDark)
-                                        Color.White.copy(alpha = 0.4f)
-                                    else
-                                        Color.Black.copy(alpha = 0.4f)
+                                    fontSize = 70.sp,
+                                    color = Color.White.copy(alpha = 0.3f)
                                 )
 
                                 Text(
                                     text = text,
                                     fontSize = 26.sp,
                                     lineHeight = 36.sp,
-                                    fontWeight = FontWeight.Medium
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color.White
                                 )
 
-                                Spacer(modifier = Modifier.height(14.dp))
-
-                                Text(
-                                    text = "❞",
-                                    fontSize = 60.sp,
-                                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
-                                            modifier = Modifier.align(
-                                        androidx.compose.ui.Alignment.End
+                                Column {
+                                    Text(
+                                        text = "❞",
+                                        fontSize = 70.sp,
+                                        color = Color.White.copy(alpha = 0.3f),
+                                        modifier = Modifier.align(Alignment.End)
                                     )
-                                )
 
-
-                                Text(
-                                    text = author.uppercase(),
-                                    fontSize = 12.sp,
-                                    letterSpacing = 2.sp,
-                                    color = if (isDark) Color.LightGray else Color.DarkGray
-                                )
+                                    Text(
+                                        text = author.uppercase(),
+                                        fontSize = 13.sp,
+                                        letterSpacing = 2.sp,
+                                        color = Color.White.copy(alpha = 0.9f)
+                                    )
+                                }
                             }
                         }
                     }
@@ -178,13 +161,17 @@ fun QuoteDetailScreen(
                 frameLayout.addView(composeView)
             }
 
+            Spacer(modifier = Modifier.height(20.dp))
 
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            // Bottom Actions
+            // 🔥 Bottom Action Bar (Premium Glass Look)
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        Color.Black.copy(alpha = if (isDark) 0.3f else 0.15f),
+                        RoundedCornerShape(20.dp)
+                    )
+                    .padding(horizontal = 24.dp, vertical = 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
 
@@ -194,11 +181,13 @@ fun QuoteDetailScreen(
                         shareQuote(context, fullText)
                     }
                 ) {
-                    Icon(Icons.Default.Share, contentDescription = null)
+                    Icon(
+                        Icons.Default.Share,
+                        contentDescription = "Share",
+                        tint = Color.White
+                    )
                 }
 
-
-                //  save as image
                 IconButton(
                     onClick = {
                         quoteView.value?.let {
@@ -206,10 +195,13 @@ fun QuoteDetailScreen(
                         }
                     }
                 ) {
-                    Icon(Icons.Default.Save, contentDescription = null)
+                    Icon(
+                        Icons.Default.Save,
+                        contentDescription = "Save",
+                        tint = Color.White
+                    )
                 }
             }
         }
     }
 }
-
