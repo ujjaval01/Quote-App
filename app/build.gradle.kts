@@ -22,13 +22,18 @@ android {
 
     buildTypes {
         release {
+
+            // infuture we will make these true(reduce size and increase performance)
             isMinifyEnabled = false
+            isShrinkResources = false
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -43,6 +48,8 @@ android {
 
 dependencies {
 
+    implementation(libs.androidx.compose.runtime.saveable)
+    implementation(libs.androidx.compose.runtime)
     testImplementation("junit:junit:4.13.2")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -86,6 +93,9 @@ dependencies {
 
     // for splash screen
     implementation("androidx.core:core-splashscreen:1.0.1")
+
+    // for pull to refresh
+    implementation("androidx.compose.material:material:1.6.0")
 
 
     // Test dependencies
