@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.uv.quotecomposeapp.loader.WaveDotsLoader
 import kotlinx.coroutines.delay
 
 @Composable
@@ -33,10 +34,13 @@ fun SplashScreen(onNavigate: () -> Unit) {
         label = ""
     )
 
+    var showLoader by remember { mutableStateOf(true) }
     LaunchedEffect(true) {
         startAnimation = true
         delay(1500)
         onNavigate()
+        showLoader = false
+
     }
 
     Box(
@@ -76,6 +80,11 @@ fun SplashScreen(onNavigate: () -> Unit) {
                 color = Color.White.copy(alpha = 0.8f),
                 modifier = Modifier.alpha(alphaAnim)
             )
+
+            Spacer(modifier = Modifier.height(22.dp))
+            if(showLoader){
+                WaveDotsLoader()
+            }
         }
     }
 }
