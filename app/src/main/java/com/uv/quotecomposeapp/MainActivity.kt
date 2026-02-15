@@ -8,6 +8,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -65,6 +66,7 @@ class MainActivity : ComponentActivity() {
             val isDark by viewModel.isDarkMode.observeAsState(false)
             var showSplash by rememberSaveable { mutableStateOf(true) }
 
+
             QuoteComposeAppTheme(darkTheme = isDark) {
                 checkForAppUpdate(this)
                 if (showSplash) {
@@ -76,3 +78,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
