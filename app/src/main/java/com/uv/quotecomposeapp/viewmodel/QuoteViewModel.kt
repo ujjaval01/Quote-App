@@ -13,6 +13,10 @@ import java.util.concurrent.TimeUnit
 class QuoteViewModel(application: Application)
     : AndroidViewModel(application) {
 
+    // ---------------- Loader in all quotes screen ----------------
+    var isFirstQuotesLaunch = true
+
+
     // ---------------- Theme ----------------
 
     private val themeDataStore = ThemeDataStore(application)
