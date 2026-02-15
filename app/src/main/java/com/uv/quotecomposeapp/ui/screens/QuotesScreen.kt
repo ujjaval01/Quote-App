@@ -40,11 +40,15 @@ fun QuotesScreen(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
-    var showLoader by remember { mutableStateOf(true) }
+    var showLoader by remember { mutableStateOf(viewModel.isFirstQuotesLaunch) }
     LaunchedEffect(Unit) {
-        delay(1860)
-        showLoader = false
+        if (viewModel.isFirstQuotesLaunch) {
+            delay(1860)
+            viewModel.isFirstQuotesLaunch = false
+            showLoader = false
+        }
     }
+
 
     var refreshKey by remember { mutableStateOf(0) }
     var refreshing by remember { mutableStateOf(false) }
